@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculation Table</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+</head>
+
+<body>
+
+    <div class="container mt-5">
+        <div class="form-group">
+            <label for="totalPrice">Ümumi qiymət</label>
+            <input type="number" class="form-control" id="totalPrice" placeholder="Ümumi qiymət">
+        </div>
+        <div class="form-group">
+            <label for="initialPayment">İlkin ödəniş</label>
+            <input type="number" class="form-control" id="initialPayment" placeholder="İlkin ödəniş">
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th colspan="3" style="text-align: center;">Qeyri-rəsmi</th>
+                        </tr>
+                        <tr>
+                            <th>Aylar</th>
+                            <th>Ayda</th>
+                            <th>Ümumi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="unofficialTable">
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="col-md-6">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th colspan="3" style="text-align: center;">Rəsmi</th>
+
+                        </tr>
+                        <tr>
+                            <th>Aylar</th>
+                            <th>Ayda</th>
+                            <th>Ümumi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="officialTable">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function () {
+            const rates = {
+                3: 0.05,
+                6: 0.08,
+                9: 0.10,
+                12: 0.15,
+                15: 0.17,
+                18: 0.20
+            };
+
+            function calculateValues(totalPrice, initialPayment) {
+                let unofficialRows = '';
+                let officialRows = '';
+
+                $.each(rates, function (months, rate) {
+                    let unofficialMonthly = (totalPrice + (totalPrice - initialPayment) * rate) / months;
+                    let unofficialTotal = unofficialMonthly * months;
+
+                    let officialMonthly = (totalPrice + (totalPrice - initialPayment) * rate - 100) / months;
+                    let officialTotal = officialMonthly * months;
+
+                    unofficialRows += `<tr>
+                                <td>${months} ay</td>
+                                <td>${Math.round(unofficialMonthly)}</td>
+                                <td>${Math.round(unofficialTotal)}</td>
+                               </tr>`;
+
+                    officialRows += `<tr>
+                                <td>${months} ay</td>
+                                <td>${Math.round(officialMonthly)}</td>
+                                <td>${Math.round(officialTotal)}</td>
+                             </tr>`;
+                });
+
+                $('#unofficialTable').html(unofficialRows);
+                $('#officialTable').html(officialRows);
+            }
+
+            $('#totalPrice, #initialPayment').on('input', function () {
+                let totalPrice = parseFloat($('#totalPrice').val()) || 0;
+                let initialPayment = parseFloat($('#initialPayment').val()) || 0;
+
+                calculateValues(totalPrice, initialPayment);
+            });
+
+        });
+    </script>
+</body>
+
+</html>
